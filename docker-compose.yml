@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - AWS_REGION=ap-southeast-1
+      - AWS_ACCESS_KEY_ID=AKIA2UC3BVBX2QGF3N7T
+      - AWS_SECRET_ACCESS_KEY=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
+      - JWT_SECRET=my_jwt_secret
+    volumes:
+      - .:/app
+    command: npm start
