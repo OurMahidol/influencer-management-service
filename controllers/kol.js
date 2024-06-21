@@ -28,9 +28,41 @@ const kolSchema = Joi.object({
 
 exports.getKOLs = async (req, res) => {
     try {
-        const params = { TableName: 'KOLs' };
+        const { Name, Platform, Sex, Categories, limit, lastKey } = req.query;
+
+        let filterExpressions = [];
+        let expressionAttributeValues = {};
+
+        if (Name) {
+            filterExpressions.push('contains(#Name, :Name)');
+            expressionAttributeValues[':Name'] = Name;
+            expressionAttributeValues['#Name'] = 'Name';
+        }
+        if (Platform) {
+            filterExpressions.push('Platform = :Platform');
+            expressionAttributeValues[':Platform'] = Platform;
+        }
+        if (Sex) {
+            filterExpressions.push('Sex = :Sex');
+            expressionAttributeValues[':Sex'] = Sex;
+        }
+        if (Categories) {
+            filterExpressions.push('contains(Categories, :Categories)');
+            expressionAttributeValues[':Categories'] = Categories;
+        }
+
+        const params = {
+            TableName: 'KOLs',
+            FilterExpression: filterExpressions.length > 0 ? filterExpressions.join(' AND ') : undefined,
+            ExpressionAttributeValues: Object.keys(expressionAttributeValues).length > 0 ? expressionAttributeValues : undefined,
+            Limit: limit ? parseInt(limit) : undefined,
+        };
+
         const data = await client.send(new ScanCommand(params));
-        res.status(200).json(data.Items);
+
+        res.status(200).json({
+            Items: data.Items,
+        });
     } catch (err) {
         console.error('Error fetching data:', err); 
         res.status(500).json({ error: 'Error fetching data' });
