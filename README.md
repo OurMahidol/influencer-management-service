@@ -74,6 +74,12 @@ This project is a web service application used for searching, creating, updating
     npm install
     ```
 
+3. Start the application locally:
+
+    ```sh
+    npm start
+    ```
+
 ### Running the Application
 
 1. Start the application using Docker Compose:
